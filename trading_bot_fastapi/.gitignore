@@ -2,3 +2,4 @@ trading_bot_fastapi_venv
 .env
 __pycache__
 app_1
+listen_key.json

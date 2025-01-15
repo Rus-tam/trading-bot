@@ -1,6 +1,5 @@
 import uuid
 import json
-import time
 import websockets
 from websockets import connect
 from typing import Optional, Callable
@@ -118,55 +117,3 @@ class BinanceService:
                         return response["result"]
                 except Exception as e:
                     raise RuntimeError("Ошибка получения времени с API") from e
-
-    async def get_account_info(self):
-        server_time = await self.get_server_time()
-        current_server_time = server_time.get("serverTime")
-        params = {
-            "apiKey": self.api_key,
-            # "omitZeroBalances": True,
-            # "recvWindow": 60000,
-            "signature": "",
-            "timestamp": int(current_server_time),
-        }
-        params["signature"] = self.crypto.generate_signature(params=params)
-
-        listen_key = self.crypto.generate_listen_key()
-
-        url = f"{self.rest_url}/api/v3/account"
-        params = {
-            "timestamp": int(time.time() * 1000),
-        }
-        params["signature"] = self.generate_signature(params)
-
-        headers = {"X-MBX-APIKEY": self.api_key}
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers=headers, params=params) as response:
-                if response.status == 200:
-                    return await response.json()
-                else:
-                    print(f"Error: {response.status}")
-                    return None
-
-        # async with connect(f"{self.websocket_url}/{listen_key}") as ws:
-        #     request_id = str(uuid.uuid4())
-        #     request = {"id": request_id, "method": "account.status", "params": params}
-        #     print("PARAMS ", params)
-        #     print(" ")
-        #     print("REQUEST ", request)
-        #     print(" ")
-        #     print("SERVER TIME ", server_time)
-        #     await ws.send(json.dumps(request))
-
-        #     while True:
-        #         try:
-        #             message = await ws.recv()
-        #             response = json.loads(message)
-        #             print("RESP", response)
-        #             if response.get("id") == request_id and "results" in response:
-        #                 return response["result"]
-        #         except Exception as e:
-        #             # print(" ")
-        #             # print(e)
-        #             # print(" ")
-        #             raise RuntimeError("Ошибка получения данных с API") from e
