@@ -9,6 +9,7 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    "@nestjs/eslint-config", "prettier"
   ],
   root: true,
   env: {
