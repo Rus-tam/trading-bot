@@ -13,10 +13,10 @@ export class WebsocketService {
     constructor(private readonly configService: ConfigService) {}
 
     private async websocket() {
-        this.ws = new WebSocket(this.configService.getOrThrow("WEBSOCKET_URL"));
+        this.ws = new WebSocket(this.configService.getOrThrow("WEBSOCKET_TEST_URL"));
     }
 
-    async connect(): Promise<unknown> {
+    async connect(): Promise<WebSocket> {
         this.logger.log("Начинаю устанавливать соединение с сервером");
         await this.websocket();
 
