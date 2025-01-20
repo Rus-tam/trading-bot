@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import * as crypto from "node:crypto";
-import { IAccountRequestParams } from "@types";
+import { IAccountStatusParams } from "@types";
 
 @Injectable()
 export class CryptoService {
-    accountInformation(params: IAccountRequestParams): string {
+    accountInformation(params: IAccountStatusParams): string {
         const paramsToSign = `apiKey=${params.apiKey}&timestamp=${params.timestamp}`;
         const hmac = crypto.createHmac("sha256", params.secretKey);
         hmac.update(paramsToSign);

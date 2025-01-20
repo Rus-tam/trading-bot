@@ -1,6 +1,6 @@
 import { Controller, Get } from "@nestjs/common";
 import { RequestService } from "./request.service";
-import { IAccountRequestParams, IGetServerTime } from "@types";
+import { IAccountStatusResult, IAccountStatusParams, IGetServerTime } from "@types";
 import { CryptoService } from "src/crypto/crypto.service";
 import { ConfigService } from "@nestjs/config";
 import { sign } from "crypto";
@@ -26,15 +26,20 @@ export class RequestController {
     }
 
     @Get("/account_data")
-    async getAccountData() {
+    async getAccountData(): Promise<IAccountStatusResult> {
         const serverTime = await this.getServerTime();
-        const params: IAccountRequestParams = {
+        const params: IAccountStatusParams = {
             apiKey: this.configService.getOrThrow("API_KEY_TEST"),
             secretKey: this.configService.getOrThrow("SECRET_KEY_TEST"),
             timestamp: serverTime.serverTime["serverTime"],
         };
         const signature = this.cryptoService.accountInformation(params);
 
-        this.requestService.getAccountInfo(signature, serverTime.serverTime["serverTime"]);
+        const serverResponse = await this.requestService.getAccountStatus(
+            signature,
+            serverTime.serverTime["serverTime"],
+        );
+
+        return serverResponse;
     }
 }

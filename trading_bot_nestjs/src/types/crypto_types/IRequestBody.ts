@@ -1,4 +1,4 @@
-import { IAccountRequestParams } from "./IAccountRequestParams";
+import { IAccountStatusParams } from "./IAccountStatusParams";
 
 export interface IRequestBody {
     id: string;
@@ -8,4 +8,4 @@ export interface IRequestBody {
 
 type RequestMethod = "time" | "account.status";
 
-type params = IAccountRequestParams;
+type params = IAccountStatusParams;
