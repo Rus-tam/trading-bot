@@ -1,16 +1,26 @@
 import { v4 as uuidv4 } from "uuid";
 import { Injectable } from "@nestjs/common";
 import { WebsocketService } from "src/websocket/websocket.service";
-import { IAccountStatusResult, IAccountStatusParams, IGetServerTime, IRequestBody } from "@types";
+import {
+    IAccountStatusResult,
+    IAccountStatusParams,
+    IGetServerTime,
+    IRequestBody,
+    IUnfilledOrderCountFirst,
+    IUnfilledOrderCountSecond,
+} from "@types";
 import { ConfigService } from "@nestjs/config";
 import { timestamp } from "rxjs";
 
 @Injectable()
 export class RequestService {
+    private apiKey: string;
     constructor(
         private readonly websocketService: WebsocketService,
         private readonly configService: ConfigService,
-    ) {}
+    ) {
+        this.apiKey = this.configService.getOrThrow("API_KEY_TEST");
+    }
 
     async testConnection() {
         const ws = await this.websocketService.connect();
@@ -26,9 +36,6 @@ export class RequestService {
         return new Promise((resolve, reject) => {
             ws.on("message", (message) => {
                 const response = JSON.parse(message.toString());
-                console.log(" ");
-                console.log("RESPONSE", response);
-                console.log(" ");
                 if (response.id === id && response.result) {
                     resolve(response.result);
                 } else {
@@ -68,13 +75,48 @@ export class RequestService {
         const ws = await this.websocketService.connect();
 
         const id = uuidv4();
-        const apiKey = this.configService.getOrThrow("API_KEY_TEST");
 
         const request: IRequestBody = {
             id,
             method: "account.status",
             params: {
-                apiKey: apiKey,
+                apiKey: this.apiKey,
+                signature,
+                timestamp: serverTime,
+            },
+        };
+
+        ws.send(JSON.stringify(request));
+
+        return new Promise((resolve, reject) => {
+            ws.on("message", (message) => {
+                try {
+                    const response = JSON.parse(message.toString());
+                    if (response.id === id && response.result) {
+                        resolve(response.result);
+                    } else {
+                        reject(new Error("Ошибка получения данных с API"));
+                    }
+                } catch (error) {
+                    reject(new Error("Ошибка парсинга ответа от WebSocket"));
+                }
+            });
+        });
+    }
+
+    async getUnfilledOrderCount(
+        signature: string,
+        serverTime: number,
+    ): Promise<[IUnfilledOrderCountFirst, IUnfilledOrderCountSecond]> {
+        const ws = await this.websocketService.connect();
+
+        const id = uuidv4();
+
+        const request: IRequestBody = {
+            id,
+            method: "account.rateLimits.orders",
+            params: {
+                apiKey: this.apiKey,
                 signature,
                 timestamp: serverTime,
             },
