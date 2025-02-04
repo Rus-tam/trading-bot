@@ -20,6 +20,8 @@
     "paths": {
       "@types": ["src/types"],
       "@types/*": ["src/types/*"],
+      "@dto": ["src/request/dto"],
+      "@dto/*": ["src/request/dto/*"]
     }
   }
 }

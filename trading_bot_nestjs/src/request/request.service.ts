@@ -8,9 +8,9 @@ import {
     IRequestBody,
     IUnfilledOrderCountFirst,
     IUnfilledOrderCountSecond,
+    IGetAccountOrderHistory,
 } from "@types";
 import { ConfigService } from "@nestjs/config";
-import { timestamp } from "rxjs";
 
 @Injectable()
 export class RequestService {
@@ -19,7 +19,8 @@ export class RequestService {
         private readonly websocketService: WebsocketService,
         private readonly configService: ConfigService,
     ) {
-        this.apiKey = this.configService.getOrThrow("API_KEY_TEST");
+        // this.apiKey = this.configService.getOrThrow("API_KEY_TEST");
+        this.apiKey = this.configService.getOrThrow("API_KEY");
     }
 
     async testConnection() {
@@ -120,6 +121,35 @@ export class RequestService {
                 signature,
                 timestamp: serverTime,
             },
+        };
+
+        ws.send(JSON.stringify(request));
+
+        return new Promise((resolve, reject) => {
+            ws.on("message", (message) => {
+                try {
+                    const response = JSON.parse(message.toString());
+                    if (response.id === id && response.result) {
+                        resolve(response.result);
+                    } else {
+                        reject(new Error("Ошибка получения данных с API"));
+                    }
+                } catch (error) {
+                    reject(new Error("Ошибка парсинга ответа от WebSocket"));
+                }
+            });
+        });
+    }
+
+    async getAccountOrderHistory(params: IGetAccountOrderHistory) {
+        const ws = await this.websocketService.connect();
+
+        const id = uuidv4();
+
+        const request: IRequestBody = {
+            id,
+            method: "allOrders",
+            params: params,
         };
 
         ws.send(JSON.stringify(request));

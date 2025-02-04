@@ -1,4 +1,4 @@
-import { Controller, Get } from "@nestjs/common";
+import { Body, Controller, Get } from "@nestjs/common";
 import { RequestService } from "./request.service";
 import {
     IAccountStatusResult,
@@ -7,10 +7,12 @@ import {
     IUnfilledOrderCount,
     IUnfilledOrderCountFirst,
     IUnfilledOrderCountSecond,
+    IGetAccountOrderHistory,
+    IGetAccountOrderHistorySign,
 } from "@types";
 import { CryptoService } from "src/crypto/crypto.service";
 import { ConfigService } from "@nestjs/config";
-import { sign } from "crypto";
+import { AccountOrderHistoryDTO } from "@dto";
 
 @Controller("request")
 export class RequestController {
@@ -21,8 +23,10 @@ export class RequestController {
         private readonly cryptoService: CryptoService,
         private readonly configService: ConfigService,
     ) {
-        this.apiKey = this.configService.getOrThrow("API_KEY_TEST");
-        this.secretKey = this.configService.getOrThrow("SECRET_KEY_TEST");
+        // this.apiKey = this.configService.getOrThrow("API_KEY_TEST");
+        // this.secretKey = this.configService.getOrThrow("SECRET_KEY_TEST");
+        this.apiKey = this.configService.getOrThrow("API_KEY");
+        this.secretKey = this.configService.getOrThrow("SECRET_KEY");
     }
 
     @Get("/ping")
@@ -37,8 +41,8 @@ export class RequestController {
         return response;
     }
 
-    @Get("/account_data")
-    async getAccountData(): Promise<IAccountStatusResult> {
+    @Get("/account_status")
+    async getAccountStatus(): Promise<IAccountStatusResult> {
         const serverTime = await this.getServerTime();
         const params: IAccountStatusParams = {
             apiKey: this.apiKey,
@@ -71,6 +75,38 @@ export class RequestController {
             signature,
             serverTime.serverTime["serverTime"],
         );
+
+        return serverResponse;
+    }
+
+    @Get("/account_order_history")
+    async getAccountOrderHistory(@Body() dto: AccountOrderHistoryDTO) {
+        const limit = dto.limit;
+        const symbol = dto.symbol;
+        if (limit < 500 || limit > 1000) {
+            throw new Error("Параметр 'limit' должен быть в пределах от 500 до 1000");
+        }
+        const serverTime = await this.getServerTime();
+
+        const params: IGetAccountOrderHistory = {
+            apiKey: this.apiKey,
+            limit,
+            symbol,
+            timestamp: serverTime.serverTime["serverTime"],
+        };
+
+        const cryptoParams: IGetAccountOrderHistorySign = { ...params };
+        cryptoParams["secretKey"] = this.secretKey;
+
+        params["signature"] = this.cryptoService.getAccountOrderHistory(cryptoParams);
+
+        const serverResponse = await this.requestService.getAccountOrderHistory(params);
+
+        console.log(" ");
+        console.log("+++++++++++++++++++++++++++++");
+        console.log(serverResponse);
+        console.log("++++++++++++++++++++++++++++++");
+        console.log(" ");
 
         return serverResponse;
     }
