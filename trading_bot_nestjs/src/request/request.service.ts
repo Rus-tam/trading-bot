@@ -9,6 +9,7 @@ import {
     IUnfilledOrderCountFirst,
     IUnfilledOrderCountSecond,
     IGetAccountOrderHistory,
+    IGetAccountOrderHistoryResult,
 } from "@types";
 import { ConfigService } from "@nestjs/config";
 
@@ -141,7 +142,7 @@ export class RequestService {
         });
     }
 
-    async getAccountOrderHistory(params: IGetAccountOrderHistory) {
+    async getAccountOrderHistory(params: IGetAccountOrderHistory): Promise<IGetAccountOrderHistoryResult> {
         const ws = await this.websocketService.connect();
 
         const id = uuidv4();
@@ -169,4 +170,6 @@ export class RequestService {
             });
         });
     }
+
+    async getAccountTradeHistory() {}
 }

@@ -6,3 +6,4 @@ export * from "./crypto_types/IUnfilledOrderCount";
 export * from "./request_types/IUnfilledOrderCountResult";
 export * from "./request_types/IGetAccountOrderHistory";
 export * from "./crypto_types/IGetAccountOrderHistorySign";
+export * from "./request_types/IAccountOrderHistoryResult";

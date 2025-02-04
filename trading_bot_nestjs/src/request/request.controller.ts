@@ -9,6 +9,7 @@ import {
     IUnfilledOrderCountSecond,
     IGetAccountOrderHistory,
     IGetAccountOrderHistorySign,
+    IGetAccountOrderHistoryResult,
 } from "@types";
 import { CryptoService } from "src/crypto/crypto.service";
 import { ConfigService } from "@nestjs/config";
@@ -80,7 +81,9 @@ export class RequestController {
     }
 
     @Get("/account_order_history")
-    async getAccountOrderHistory(@Body() dto: AccountOrderHistoryDTO) {
+    async getAccountOrderHistory(
+        @Body() dto: AccountOrderHistoryDTO,
+    ): Promise<IGetAccountOrderHistoryResult> {
         const limit = dto.limit;
         const symbol = dto.symbol;
         if (limit < 500 || limit > 1000) {
@@ -99,14 +102,7 @@ export class RequestController {
         cryptoParams["secretKey"] = this.secretKey;
 
         params["signature"] = this.cryptoService.getAccountOrderHistory(cryptoParams);
-
         const serverResponse = await this.requestService.getAccountOrderHistory(params);
-
-        console.log(" ");
-        console.log("+++++++++++++++++++++++++++++");
-        console.log(serverResponse);
-        console.log("++++++++++++++++++++++++++++++");
-        console.log(" ");
 
         return serverResponse;
     }
