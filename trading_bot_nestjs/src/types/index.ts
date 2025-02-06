@@ -13,3 +13,5 @@ export * from "./request_types/IAccountOrderListHistoryRes";
 export * from "./request_types/IGetAccountTradeHistory";
 export * from "./crypto_types/IGetAccountTradeHistorySign";
 export * from "./request_types/IGetAccountTradeHistoryRes";
+export * from "./request_types/IGetAccountPreventedMatches";
+export * from "./crypto_types/IGetAccountPreventedMatchesSign";

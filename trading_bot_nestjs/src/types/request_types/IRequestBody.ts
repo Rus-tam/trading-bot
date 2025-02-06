@@ -13,6 +13,7 @@ type RequestMethod =
     | "account.rateLimits.orders"
     | "allOrders"
     | "allOrderLists"
-    | "myTrades";
+    | "myTrades"
+    | "myPreventedMatches";
 
 type params = IAccountStatusParams | IUnfilledOrderCount;

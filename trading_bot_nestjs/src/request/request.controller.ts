@@ -16,10 +16,17 @@ import {
     IGetAccountTradeHistory,
     IGetAccountTradeHistorySign,
     IGetAccountTradeHistoryRes,
+    IGetAccountPreventedMatches,
+    IGetAccountPreventedMatchesSign,
 } from "@types";
 import { CryptoService } from "src/crypto/crypto.service";
 import { ConfigService } from "@nestjs/config";
-import { AccountOrderHistoryDTO, AccountOrderListHistoryDTO, AccountTradeHistoryDTO } from "@dto";
+import {
+    AccountOrderHistoryDTO,
+    AccountOrderListHistoryDTO,
+    AccountPreventedMatchesDTO,
+    AccountTradeHistoryDTO,
+} from "@dto";
 
 @Controller("request")
 export class RequestController {
@@ -158,6 +165,34 @@ export class RequestController {
 
         params["signature"] = this.cryptoService.getAccountTradeHistory(cryptoParams);
         const serverResponse = await this.requestService.getAccountTradeHistory(params);
+
+        return serverResponse;
+    }
+
+    // Displays the list of orders that were expired due to STP.
+    @Get("/account_prevented_matches")
+    async getAccountPreventedMatches(@Body() dto: AccountPreventedMatchesDTO) {
+        const symbol = dto.symbol;
+        const limit = dto.limit;
+        const orderId = dto.orderId;
+        if (limit < 500 || limit > 1000) {
+            throw new Error("Параметр 'limit' должен быть в пределах от 500 до 1000");
+        }
+        const serverTime = await this.getServerTime();
+
+        const params: IGetAccountPreventedMatches = {
+            symbol,
+            limit,
+            orderId,
+            apiKey: this.apiKey,
+            timestamp: serverTime.serverTime["serverTime"],
+        };
+
+        const cryptoParams: IGetAccountPreventedMatchesSign = { ...params };
+        cryptoParams["secretKey"] = this.secretKey;
+
+        params["signature"] = this.cryptoService.getAccountPreventedMatches(cryptoParams);
+        const serverResponse = await this.requestService.getAccountPreventedMatches(params);
 
         return serverResponse;
     }

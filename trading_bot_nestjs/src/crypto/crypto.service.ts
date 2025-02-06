@@ -4,6 +4,7 @@ import {
     IAccountStatusParams,
     IGetAccountOrderHistorySign,
     IGetAccountOrderListHistorySign,
+    IGetAccountPreventedMatchesSign,
     IGetAccountTradeHistorySign,
     IUnfilledOrderCount,
 } from "@types";
@@ -48,6 +49,15 @@ export class CryptoService {
 
     getAccountTradeHistory(params: IGetAccountTradeHistorySign) {
         const paramsToSign = `apiKey=${params.apiKey}&symbol=${params.symbol}&timestamp=${params.timestamp}`;
+        const hmac = crypto.createHmac("sha256", params.secretKey);
+        hmac.update(paramsToSign);
+        const signature = hmac.digest("hex");
+
+        return signature;
+    }
+
+    getAccountPreventedMatches(params: IGetAccountPreventedMatchesSign) {
+        const paramsToSign = `apiKey=${params.apiKey}&limit=${params.limit}&orderId=${params.orderId}&symbol=${params.symbol}&timestamp=${params.timestamp}`;
         const hmac = crypto.createHmac("sha256", params.secretKey);
         hmac.update(paramsToSign);
         const signature = hmac.digest("hex");
