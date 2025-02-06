@@ -10,6 +10,7 @@ import {
     IUnfilledOrderCountSecond,
     IGetAccountOrderHistory,
     IGetAccountOrderHistoryResult,
+    IGetAccountOrderListHistory,
 } from "@types";
 import { ConfigService } from "@nestjs/config";
 
@@ -171,5 +172,32 @@ export class RequestService {
         });
     }
 
-    async getAccountTradeHistory() {}
+    async getAccountOrderListHistory(params: IGetAccountOrderListHistory) {
+        const ws = await this.websocketService.connect();
+
+        const id = uuidv4();
+
+        const request: IRequestBody = {
+            id,
+            method: "allOrderLists",
+            params: params,
+        };
+
+        ws.send(JSON.stringify(request));
+
+        return new Promise((resolve, reject) => {
+            ws.on("message", (message) => {
+                try {
+                    const response = JSON.parse(message.toString());
+                    if (response.id === id && response.result) {
+                        resolve(response.result);
+                    } else {
+                        reject(new Error("Ошибка получения данных с API"));
+                    }
+                } catch (error) {
+                    reject(new Error("Ошибка парсинга ответа от WebSocket"));
+                }
+            });
+        });
+    }
 }
