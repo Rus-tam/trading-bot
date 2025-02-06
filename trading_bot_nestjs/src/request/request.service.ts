@@ -13,6 +13,7 @@ import {
     IGetAccountOrderListHistory,
     IAccountOrderListHistoryRes,
     IGetAccountTradeHistory,
+    IGetAccountTradeHistoryRes,
 } from "@types";
 import { ConfigService } from "@nestjs/config";
 
@@ -205,7 +206,7 @@ export class RequestService {
         });
     }
 
-    async getAccountTradeHistory(params: IGetAccountTradeHistory) {
+    async getAccountTradeHistory(params: IGetAccountTradeHistory): Promise<IGetAccountTradeHistoryRes[]> {
         const ws = await this.websocketService.connect();
 
         const id = uuidv4();
@@ -222,7 +223,6 @@ export class RequestService {
             ws.on("message", (message) => {
                 try {
                     const response = JSON.parse(message.toString());
-                    console.log("RESPONSE", response);
                     if (response.id === id && response.result) {
                         resolve(response.result);
                     } else {

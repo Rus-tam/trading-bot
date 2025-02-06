@@ -15,6 +15,7 @@ import {
     IAccountOrderListHistoryRes,
     IGetAccountTradeHistory,
     IGetAccountTradeHistorySign,
+    IGetAccountTradeHistoryRes,
 } from "@types";
 import { CryptoService } from "src/crypto/crypto.service";
 import { ConfigService } from "@nestjs/config";
@@ -141,7 +142,7 @@ export class RequestController {
 
     // Query information about all your trades, filtered by time range.
     @Get("/account_trade_history")
-    async getAccountTradeHistory(@Body() dto: AccountTradeHistoryDTO) {
+    async getAccountTradeHistory(@Body() dto: AccountTradeHistoryDTO): Promise<IGetAccountTradeHistoryRes[]> {
         const symbol = dto.symbol;
 
         const serverTime = await this.getServerTime();
