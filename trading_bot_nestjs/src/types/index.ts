@@ -10,3 +10,5 @@ export * from "./request_types/IAccountOrderHistoryResult";
 export * from "./request_types/IGetAccountOrderListHistory";
 export * from "./crypto_types/IGetAccountOrderListHistorySign";
 export * from "./request_types/IAccountOrderListHistoryRes";
+export * from "./request_types/IGetAccountTradeHistory";
+export * from "./crypto_types/IGetAccountTradeHistorySign";

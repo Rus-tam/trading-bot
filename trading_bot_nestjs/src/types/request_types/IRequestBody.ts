@@ -7,6 +7,12 @@ export interface IRequestBody {
     params?: params;
 }
 
-type RequestMethod = "time" | "account.status" | "account.rateLimits.orders" | "allOrders" | "allOrderLists";
+type RequestMethod =
+    | "time"
+    | "account.status"
+    | "account.rateLimits.orders"
+    | "allOrders"
+    | "allOrderLists"
+    | "myTrades";
 
 type params = IAccountStatusParams | IUnfilledOrderCount;

@@ -13,11 +13,12 @@ import {
     IGetAccountOrderListHistory,
     IGetAccountOrderListHistorySign,
     IAccountOrderListHistoryRes,
+    IGetAccountTradeHistory,
+    IGetAccountTradeHistorySign,
 } from "@types";
 import { CryptoService } from "src/crypto/crypto.service";
 import { ConfigService } from "@nestjs/config";
-import { AccountOrderHistoryDTO, AccountOrderListHistoryDTO } from "@dto";
-import { createTracing } from "trace_events";
+import { AccountOrderHistoryDTO, AccountOrderListHistoryDTO, AccountTradeHistoryDTO } from "@dto";
 
 @Controller("request")
 export class RequestController {
@@ -111,8 +112,9 @@ export class RequestController {
         return serverResponse;
     }
 
+    // Query information about all your order lists, filtered by time range.
     @Get("/account_order_list_history")
-    async GetAccountOrderListHistory(
+    async getAccountOrderListHistory(
         @Body() dto: AccountOrderListHistoryDTO,
     ): Promise<IAccountOrderListHistoryRes[]> {
         const limit = dto.limit;
@@ -133,6 +135,28 @@ export class RequestController {
 
         params["signature"] = this.cryptoService.getAccountOrderListHistory(cryptoParams);
         const serverResponse = await this.requestService.getAccountOrderListHistory(params);
+
+        return serverResponse;
+    }
+
+    // Query information about all your trades, filtered by time range.
+    @Get("/account_trade_history")
+    async getAccountTradeHistory(@Body() dto: AccountTradeHistoryDTO) {
+        const symbol = dto.symbol;
+
+        const serverTime = await this.getServerTime();
+
+        const params: IGetAccountTradeHistory = {
+            symbol,
+            apiKey: this.apiKey,
+            timestamp: serverTime.serverTime["serverTime"],
+        };
+
+        const cryptoParams: IGetAccountTradeHistorySign = { ...params };
+        cryptoParams["secretKey"] = this.secretKey;
+
+        params["signature"] = this.cryptoService.getAccountTradeHistory(cryptoParams);
+        const serverResponse = await this.requestService.getAccountTradeHistory(params);
 
         return serverResponse;
     }
