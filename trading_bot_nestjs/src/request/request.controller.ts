@@ -12,6 +12,7 @@ import {
     IGetAccountOrderHistoryResult,
     IGetAccountOrderListHistory,
     IGetAccountOrderListHistorySign,
+    IAccountOrderListHistoryRes,
 } from "@types";
 import { CryptoService } from "src/crypto/crypto.service";
 import { ConfigService } from "@nestjs/config";
@@ -111,7 +112,9 @@ export class RequestController {
     }
 
     @Get("/account_order_list_history")
-    async GetAccountOrderListHistory(@Body() dto: AccountOrderListHistoryDTO) {
+    async GetAccountOrderListHistory(
+        @Body() dto: AccountOrderListHistoryDTO,
+    ): Promise<IAccountOrderListHistoryRes[]> {
         const limit = dto.limit;
         if (limit < 500 || limit > 1000) {
             throw new Error("Параметр 'limit' должен быть в пределах от 500 до 1000");
@@ -131,8 +134,6 @@ export class RequestController {
         params["signature"] = this.cryptoService.getAccountOrderListHistory(cryptoParams);
         const serverResponse = await this.requestService.getAccountOrderListHistory(params);
 
-        console.log(" ");
-        console.log(serverResponse);
-        console.log(" ");
+        return serverResponse;
     }
 }

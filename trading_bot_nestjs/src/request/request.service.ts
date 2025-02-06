@@ -11,6 +11,7 @@ import {
     IGetAccountOrderHistory,
     IGetAccountOrderHistoryResult,
     IGetAccountOrderListHistory,
+    IAccountOrderListHistoryRes,
 } from "@types";
 import { ConfigService } from "@nestjs/config";
 
@@ -172,7 +173,9 @@ export class RequestService {
         });
     }
 
-    async getAccountOrderListHistory(params: IGetAccountOrderListHistory) {
+    async getAccountOrderListHistory(
+        params: IGetAccountOrderListHistory,
+    ): Promise<IAccountOrderListHistoryRes[]> {
         const ws = await this.websocketService.connect();
 
         const id = uuidv4();
