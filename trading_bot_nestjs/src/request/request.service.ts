@@ -15,6 +15,7 @@ import {
     IGetAccountTradeHistory,
     IGetAccountTradeHistoryRes,
     IGetAccountPreventedMatches,
+    IGetAccountPreventedMatchesRes,
 } from "@types";
 import { ConfigService } from "@nestjs/config";
 
@@ -236,7 +237,9 @@ export class RequestService {
         });
     }
 
-    async getAccountPreventedMatches(params: IGetAccountPreventedMatches) {
+    async getAccountPreventedMatches(
+        params: IGetAccountPreventedMatches,
+    ): Promise<IGetAccountPreventedMatchesRes[]> {
         const ws = await this.websocketService.connect();
 
         const id = uuidv4();
@@ -253,9 +256,6 @@ export class RequestService {
             ws.on("message", (message) => {
                 try {
                     const response = JSON.parse(message.toString());
-                    console.log(" ");
-                    console.log(response);
-
                     if (response.id === id && response.result) {
                         resolve(response.result);
                     } else {
