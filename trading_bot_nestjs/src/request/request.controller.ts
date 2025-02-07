@@ -199,4 +199,31 @@ export class RequestController {
 
         return serverResponse;
     }
+
+    @Get("/playground")
+    async playground(@Body() dto: AccountPreventedMatchesDTO) {
+        const symbol = dto.symbol;
+        const limit = dto.limit;
+        const orderId = dto.orderId;
+        if (limit < 500 || limit > 1000) {
+            throw new Error("Параметр 'limit' должен быть в пределах от 500 до 1000");
+        }
+        const serverTime = await this.getServerTime();
+
+        const params: IGetAccountPreventedMatches = {
+            symbol,
+            limit,
+            orderId,
+            apiKey: this.apiKey,
+            timestamp: serverTime.serverTime["serverTime"],
+        };
+
+        const cryptoParams: IGetAccountPreventedMatchesSign = { ...params };
+        cryptoParams["secretKey"] = this.secretKey;
+
+        params["signature"] = this.cryptoService.getAccountPreventedMatches(cryptoParams);
+        const serverResponse = await this.requestService.getRequest(params, "myPreventedMatches");
+
+        return serverResponse;
+    }
 }

@@ -7,7 +7,7 @@ export interface IRequestBody {
     params?: params;
 }
 
-type RequestMethod =
+export type RequestMethod =
     | "time"
     | "account.status"
     | "account.rateLimits.orders"

@@ -16,3 +16,4 @@ export * from "./request_types/IGetAccountTradeHistoryRes";
 export * from "./request_types/IGetAccountPreventedMatches";
 export * from "./crypto_types/IGetAccountPreventedMatchesSign";
 export * from "./request_types/IGetAccountPreventedMatchesRes";
+export * from "./request_types/OverallRequestType";
