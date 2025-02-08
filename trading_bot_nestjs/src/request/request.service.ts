@@ -18,6 +18,7 @@ import {
     IGetAccountPreventedMatchesRes,
     OverallRequest,
     RequestMethod,
+    OverallResult,
 } from "@types";
 import { ConfigService } from "@nestjs/config";
 
@@ -270,7 +271,7 @@ export class RequestService {
         });
     }
 
-    async getRequest(params: OverallRequest, method: RequestMethod) {
+    async getRequest(params: OverallRequest, method: RequestMethod): Promise<OverallResult> {
         const ws = await this.websocketService.connect();
         const id = uuidv4();
 
@@ -286,6 +287,9 @@ export class RequestService {
             ws.on("message", (message) => {
                 try {
                     const response = JSON.parse(message.toString());
+                    console.log(" ");
+                    console.log(response);
+                    console.log(" ");
                     if (response.id === id && response.result) {
                         resolve(response.result);
                     } else {

@@ -19,6 +19,7 @@ import {
     IGetAccountPreventedMatches,
     IGetAccountPreventedMatchesSign,
     IGetAccountPreventedMatchesRes,
+    OverallResult,
 } from "@types";
 import { CryptoService } from "src/crypto/crypto.service";
 import { ConfigService } from "@nestjs/config";
@@ -172,9 +173,7 @@ export class RequestController {
 
     // Displays the list of orders that were expired due to STP.
     @Get("/account_prevented_matches")
-    async getAccountPreventedMatches(
-        @Body() dto: AccountPreventedMatchesDTO,
-    ): Promise<IGetAccountPreventedMatchesRes[]> {
+    async getAccountPreventedMatches(@Body() dto: AccountPreventedMatchesDTO): Promise<OverallResult> {
         const symbol = dto.symbol;
         const limit = dto.limit;
         const orderId = dto.orderId;
@@ -195,7 +194,7 @@ export class RequestController {
         cryptoParams["secretKey"] = this.secretKey;
 
         params["signature"] = this.cryptoService.getAccountPreventedMatches(cryptoParams);
-        const serverResponse = await this.requestService.getAccountPreventedMatches(params);
+        const serverResponse = await this.requestService.getRequest(params, "myPreventedMatches");
 
         return serverResponse;
     }
