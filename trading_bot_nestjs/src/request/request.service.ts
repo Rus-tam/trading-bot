@@ -21,6 +21,7 @@ import {
     OverallResult,
 } from "@types";
 import { ConfigService } from "@nestjs/config";
+import axios from "axios";
 
 @Injectable()
 export class RequestService {
@@ -83,6 +84,10 @@ export class RequestService {
     }
 
     async getAccountStatus(signature: string, serverTime: number): Promise<IAccountStatusResult> {
+        const time = await axios.get("https://api.binance.com/api/v3/time");
+        console.log("===================");
+        console.log(time.data);
+        console.log("======================");
         const ws = await this.websocketService.connect();
 
         const id = uuidv4();
@@ -287,9 +292,6 @@ export class RequestService {
             ws.on("message", (message) => {
                 try {
                     const response = JSON.parse(message.toString());
-                    console.log(" ");
-                    console.log(response);
-                    console.log(" ");
                     if (response.id === id && response.result) {
                         resolve(response.result);
                     } else {

@@ -4,6 +4,7 @@ import { WebsocketModule } from "./websocket/websocket.module";
 import { ConfigModule } from "@nestjs/config";
 import { CryptoModule } from "./crypto/crypto.module";
 import { RequestModule } from "./request/request.module";
+import { RequestsModule } from './requests/requests.module';
 
 @Module({
     imports: [
@@ -12,6 +13,7 @@ import { RequestModule } from "./request/request.module";
         WebsocketModule,
         CryptoModule,
         RequestModule,
+        RequestsModule,
     ],
     controllers: [],
     providers: [],
