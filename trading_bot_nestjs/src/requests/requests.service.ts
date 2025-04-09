@@ -1,12 +1,14 @@
+import { v4 as uuidv4 } from "uuid";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config/dist/config.service";
 import axios from "axios";
 import { WebsocketService } from "src/websocket/websocket.service";
+import { authorizedRequestMethodType, AuthorizedRequestResultType, authorizedRequestType } from "@types";
 
 @Injectable()
 export class RequestsService {
     private readonly logger = new Logger(RequestsService.name);
-    private apiKey: string;
+    private readonly apiKey: string;
 
     constructor(
         private readonly websocketService: WebsocketService,
@@ -25,8 +27,38 @@ export class RequestsService {
             return serverTime.data["serverTime"];
         } else {
             this.logger.error("Ошибка в процессе получения серверного времени");
+            return new Error("Ошибка в процессе получения серверного времени");
         }
     }
 
-    async getAccountStatus(signature: string) {}
+    async authorizedRequest(
+        params: authorizedRequestType,
+        method: authorizedRequestMethodType,
+    ): Promise<AuthorizedRequestResultType> {
+        const ws = await this.websocketService.connect();
+        const id = uuidv4();
+
+        const request = {
+            id,
+            method,
+            params,
+        };
+
+        ws.send(JSON.stringify(request));
+
+        return new Promise((resolve, reject) => {
+            ws.on("message", (message) => {
+                try {
+                    const response = JSON.parse(message.toString());
+                    if (response.id === id && response.result) {
+                        resolve(response.result);
+                    } else {
+                        reject(new Error("Ошибка получения данных с API"));
+                    }
+                } catch (error) {
+                    reject(new Error("Ошибка парсинга ответа от WebSocket"));
+                }
+            });
+        });
+    }
 }
