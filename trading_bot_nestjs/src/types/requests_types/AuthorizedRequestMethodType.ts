@@ -1,1 +1,1 @@
-export type authorizedRequestMethodType = "account.status";
+export type authorizedRequestMethodType = "account.status" | "allOrders";

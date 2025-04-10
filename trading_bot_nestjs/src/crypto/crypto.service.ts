@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import * as crypto from "node:crypto";
 import {
     IAccountStatusParams,
+    ICryptoPayload,
     IGetAccountOrderHistorySign,
     IGetAccountOrderListHistorySign,
     IGetAccountPreventedMatchesSign,
@@ -29,7 +30,7 @@ export class CryptoService {
         return signature;
     }
 
-    getAccountOrderHistory(params: IGetAccountOrderHistorySign) {
+    getOrderHistory(params: ICryptoPayload) {
         const paramsToSign = `apiKey=${params.apiKey}&limit=${params.limit}&symbol=${params.symbol}&timestamp=${params.timestamp}`;
         const hmac = crypto.createHmac("sha256", params.secretKey);
         hmac.update(paramsToSign);

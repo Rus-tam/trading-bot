@@ -1,3 +1,3 @@
-import { IAccountStatusResult } from "@types";
+import { IAccountStatusResult, IOrderHistoryResult } from "@types";
 
-export type AuthorizedRequestResultType = IAccountStatusResult;
+export type AuthorizedRequestResultType = IAccountStatusResult | IOrderHistoryResult;

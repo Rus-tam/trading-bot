@@ -1,8 +1,15 @@
-import { Controller, Get, Logger } from "@nestjs/common";
+import { Body, Controller, Get, Logger } from "@nestjs/common";
 import { RequestsService } from "./requests.service";
-import { IAccountStatusRequest, IAccountStatusResult, ICryptoPayload } from "@types";
+import {
+    IAccountStatusRequest,
+    IAccountStatusResult,
+    ICryptoPayload,
+    IOrderHistoryRequest,
+    IOrderHistoryResult,
+} from "@types";
 import { ConfigService } from "@nestjs/config";
 import { CryptoService } from "src/crypto/crypto.service";
+import { OrderHistoryDTO } from "./dto";
 
 @Controller("requests")
 export class RequestsController {
@@ -47,14 +54,30 @@ export class RequestsController {
     }
 
     @Get("/order-history")
-    async getOrderHistory() {
+    async getOrderHistory(@Body() dto: OrderHistoryDTO) {
         const serverTime = await this.requestsService.getServerTime();
+        if (dto.limit < 500 || dto.limit > 1000) {
+            throw new Error("Параметр 'limit' должен быть в пределах от 500 до 1000");
+        }
         const payload: ICryptoPayload = {
             apiKey: this.apiKey,
             secretKey: this.secretKey,
             timestamp: serverTime,
-            // limit
-            // symbol
+            limit: dto.limit,
+            symbol: dto.symbol,
         };
+
+        const signature = this.cryptoService.getOrderHistory(payload);
+        const params: IOrderHistoryRequest = {
+            apiKey: this.apiKey,
+            signature,
+            timestamp: serverTime,
+            limit: dto.limit,
+            symbol: dto.symbol,
+        };
+
+        const orderHistory = await this.requestsService.authorizedRequest(params, "allOrders");
+
+        return orderHistory;
     }
 }

@@ -31,10 +31,7 @@ export class RequestsService {
         }
     }
 
-    async authorizedRequest(
-        params: authorizedRequestType,
-        method: authorizedRequestMethodType,
-    ): Promise<AuthorizedRequestResultType> {
+    async authorizedRequest(params: authorizedRequestType, method: authorizedRequestMethodType) {
         const ws = await this.websocketService.connect();
         const id = uuidv4();
 

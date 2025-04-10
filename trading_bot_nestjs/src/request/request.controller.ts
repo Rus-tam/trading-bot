@@ -95,32 +95,32 @@ export class RequestController {
         return serverResponse;
     }
 
-    @Get("/account_order_history")
-    async getAccountOrderHistory(
-        @Body() dto: AccountOrderHistoryDTO,
-    ): Promise<IGetAccountOrderHistoryResult> {
-        const limit = dto.limit;
-        const symbol = dto.symbol;
-        if (limit < 500 || limit > 1000) {
-            throw new Error("Параметр 'limit' должен быть в пределах от 500 до 1000");
-        }
-        const serverTime = await this.getServerTime();
+    // @Get("/account_order_history")
+    // async getAccountOrderHistory(
+    //     @Body() dto: AccountOrderHistoryDTO,
+    // ): Promise<IGetAccountOrderHistoryResult> {
+    //     const limit = dto.limit;
+    //     const symbol = dto.symbol;
+    //     if (limit < 500 || limit > 1000) {
+    //         throw new Error("Параметр 'limit' должен быть в пределах от 500 до 1000");
+    //     }
+    //     const serverTime = await this.getServerTime();
 
-        const params: IGetAccountOrderHistory = {
-            apiKey: this.apiKey,
-            limit,
-            symbol,
-            timestamp: serverTime.serverTime["serverTime"],
-        };
+    //     const params: IGetAccountOrderHistory = {
+    //         apiKey: this.apiKey,
+    //         limit,
+    //         symbol,
+    //         timestamp: serverTime.serverTime["serverTime"],
+    //     };
 
-        const cryptoParams: IGetAccountOrderHistorySign = { ...params };
-        cryptoParams["secretKey"] = this.secretKey;
+    //     const cryptoParams: IGetAccountOrderHistorySign = { ...params };
+    //     cryptoParams["secretKey"] = this.secretKey;
 
-        params["signature"] = this.cryptoService.getAccountOrderHistory(cryptoParams);
-        const serverResponse = await this.requestService.getAccountOrderHistory(params);
+    //     params["signature"] = this.cryptoService.getAccountOrderHistory(cryptoParams);
+    //     const serverResponse = await this.requestService.getAccountOrderHistory(params);
 
-        return serverResponse;
-    }
+    //     return serverResponse;
+    // }
 
     // Query information about all your order lists, filtered by time range.
     @Get("/account_order_list_history")

@@ -25,3 +25,5 @@ export * from "./requests_types/AuthorizedRequestMethodType";
 export * from "./requests_types/ICryptoPayload";
 export * from "./requests_types/IAccountStatusResult";
 export * from "./requests_types/AuthorizedRequestResultType";
+export * from "./requests_types/IOrderHistoryRequest";
+export * from "./requests_types/IOrderHistroryResult";
