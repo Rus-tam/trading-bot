@@ -53,6 +53,16 @@ export class RequestsController {
             "account.status",
         );
 
+        const availableCoins = [];
+
+        for (let i = 0; i < accountStatus.balances.length; i++) {
+            if (parseFloat(accountStatus.balances[i].free) !== 0) {
+                availableCoins.push(accountStatus.balances[i]);
+            }
+        }
+
+        accountStatus.balances = [...availableCoins];
+
         return accountStatus;
     }
 
