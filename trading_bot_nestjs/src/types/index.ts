@@ -27,3 +27,7 @@ export * from "./requests_types/IAccountStatusResult";
 export * from "./requests_types/AuthorizedRequestResultType";
 export * from "./requests_types/IOrderHistoryRequest";
 export * from "./requests_types/IOrderHistroryResult";
+export * from "./requests_types/IKlinesRequest";
+export * from "./requests_types/SimpleRequestMethodType";
+export * from "./requests_types/SimpleRequestMethodType";
+export * from "./requests_types/SimpleRequestType";
