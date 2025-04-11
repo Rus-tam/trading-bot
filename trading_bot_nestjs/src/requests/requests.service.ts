@@ -51,6 +51,7 @@ export class RequestsService {
                 try {
                     const response = JSON.parse(message.toString());
                     if (response.id === id && response.result) {
+                        this.logger.log("Данные успешно получены");
                         resolve(response.result as T);
                     } else {
                         reject(new Error("Ошибка получения данных с API"));

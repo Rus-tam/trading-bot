@@ -11,26 +11,20 @@ import { ConfigService } from "@nestjs/config";
 import { CryptoService } from "src/crypto/crypto.service";
 import { OrderHistoryDTO } from "./dto";
 
-@Controller("requests")
-export class RequestsController {
+@Controller("requests/account")
+export class AccountController {
     private readonly apiKey: string;
     private readonly secretKey: string;
-    private readonly logger = new Logger(RequestsController.name);
+    private readonly logger = new Logger(AccountController.name);
     constructor(
         private readonly requestsService: RequestsService,
         private readonly cryptoService: CryptoService,
         private readonly configService: ConfigService,
     ) {
-        // this.apiKey = this.configService.getOrThrow("API_KEY_TEST");
-        // this.secretKey = this.configService.getOrThrow("SECRET_KEY_TEST");
-        this.apiKey = this.configService.getOrThrow("API_KEY");
-        this.secretKey = this.configService.getOrThrow("SECRET_KEY");
-    }
-
-    @Get("/server-time")
-    async getServerTime() {
-        const serverTime = await this.requestsService.getServerTime();
-        return serverTime;
+        this.apiKey = this.configService.getOrThrow("API_KEY_TEST");
+        this.secretKey = this.configService.getOrThrow("SECRET_KEY_TEST");
+        // this.apiKey = this.configService.getOrThrow("API_KEY");
+        // this.secretKey = this.configService.getOrThrow("SECRET_KEY");
     }
 
     @Get("/account-status")
@@ -48,6 +42,9 @@ export class RequestsController {
             signature,
             timestamp: serverTime,
         };
+
+        this.logger.log("Начинаю запрос данных по аккаунту...");
+
         const accountStatus = await this.requestsService.authorizedRequest<IAccountStatusResult>(
             params,
             "account.status",
@@ -88,7 +85,7 @@ export class RequestsController {
             limit: dto.limit,
             symbol: dto.symbol,
         };
-
+        this.logger.log("Начинаю запрос данных по истории ордеров...");
         const orderHistory = await this.requestsService.authorizedRequest<IOrderHistoryResult>(
             params,
             "allOrders",
