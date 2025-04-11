@@ -48,13 +48,16 @@ export class RequestsController {
             signature,
             timestamp: serverTime,
         };
-        const accountStatus = await this.requestsService.authorizedRequest(params, "account.status");
+        const accountStatus = await this.requestsService.authorizedRequest<IAccountStatusResult>(
+            params,
+            "account.status",
+        );
 
         return accountStatus;
     }
 
     @Get("/order-history")
-    async getOrderHistory(@Body() dto: OrderHistoryDTO) {
+    async getOrderHistory(@Body() dto: OrderHistoryDTO): Promise<IOrderHistoryResult> {
         const serverTime = await this.requestsService.getServerTime();
         if (dto.limit < 500 || dto.limit > 1000) {
             throw new Error("Параметр 'limit' должен быть в пределах от 500 до 1000");
@@ -76,7 +79,10 @@ export class RequestsController {
             symbol: dto.symbol,
         };
 
-        const orderHistory = await this.requestsService.authorizedRequest(params, "allOrders");
+        const orderHistory = await this.requestsService.authorizedRequest<IOrderHistoryResult>(
+            params,
+            "allOrders",
+        );
 
         return orderHistory;
     }

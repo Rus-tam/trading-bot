@@ -31,7 +31,10 @@ export class RequestsService {
         }
     }
 
-    async authorizedRequest(params: authorizedRequestType, method: authorizedRequestMethodType) {
+    async authorizedRequest<T>(
+        params: authorizedRequestType,
+        method: authorizedRequestMethodType,
+    ): Promise<T> {
         const ws = await this.websocketService.connect();
         const id = uuidv4();
 
@@ -48,7 +51,7 @@ export class RequestsService {
                 try {
                     const response = JSON.parse(message.toString());
                     if (response.id === id && response.result) {
-                        resolve(response.result);
+                        resolve(response.result as T);
                     } else {
                         reject(new Error("Ошибка получения данных с API"));
                     }
