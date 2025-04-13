@@ -31,3 +31,4 @@ export * from "./requests_types/IKlinesRequest";
 export * from "./requests_types/SimpleRequestMethodType";
 export * from "./requests_types/SimpleRequestMethodType";
 export * from "./requests_types/SimpleRequestType";
+export * from "./requests_types/GetKlinesRequestResultType";

@@ -3,7 +3,7 @@ import { RequestsService } from "./requests.service";
 import { CryptoService } from "src/crypto/crypto.service";
 import { ConfigService } from "@nestjs/config";
 import { KlinesDTO } from "./dto";
-import { IKlineRequest } from "@types";
+import { GetKlinesRequestResult, IKlineRequest } from "@types";
 
 @Controller("requests/market")
 export class MarketController {
@@ -23,7 +23,7 @@ export class MarketController {
 
     // Метод нужен для получения средней цены токена для тестирования метода, который будет размещать ордер
     @Get("klines")
-    async getKlines(@Body() dto: KlinesDTO) {
+    async getKlines(@Body() dto: KlinesDTO): Promise<GetKlinesRequestResult> {
         if (dto.limit < 500 || dto.limit > 1000) {
             throw new Error("Параметр 'limit' должен быть в пределах от 500 до 1000");
         }
@@ -34,7 +34,14 @@ export class MarketController {
             limit: dto.limit,
         };
 
-        const klines = await this.requestsService.simpleRequest(params, "klines");
+        const klines: GetKlinesRequestResult = await this.requestsService.simpleRequest(params, "klines");
+
+        for (let i = 0; i < klines.length; i++) {
+            if (klines[i][0]) {
+                klines[i][0] = this.requestsService.formatDate(klines[i][0]);
+                klines[i][6] = this.requestsService.formatDate(klines[i][6]);
+            }
+        }
 
         return klines;
     }
